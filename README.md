@@ -124,7 +124,7 @@ same names: Container Image, Container Start Command, Volume Mount Path, Expose 
 
 | File | Use |
 |---|---|
-| `runpod/pod-serve.json` | Clones this repo and runs `scripts/runpod_serve.sh`, so `config/models.yaml` picks the model. **Needs this repo pushed to a git remote** — set `REPO_URL`. |
+| `runpod/pod-serve.json` | Clones this repo and runs `scripts/runpod_serve.sh`, so `config/models.yaml` picks the model. `REPO_URL` points here; change it for a fork. |
 | `runpod/pod-serve-norepo.json` | No git remote. vLLM arguments only, appended to the image's entrypoint. Works as-is; `models.yaml` isn't consulted, so keep the two in step by hand. |
 
 `runpod/README.md` has the `curl`, the console field names, and what to set before launching.

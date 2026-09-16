@@ -13,7 +13,7 @@
     "8000/http"
   ],
   "env": {
-    "REPO_URL": "https://github.com/YOU/sn64-miner-bot.git",
+    "REPO_URL": "https://github.com/EvilIggy55/sn64-miner-bot.git",
     "VLLM_API_KEY": "REPLACE_ME: openssl rand -hex 32",
     "HF_HOME": "/workspace/hf",
     "HF_TOKEN": ""

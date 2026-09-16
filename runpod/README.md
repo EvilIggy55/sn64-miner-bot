@@ -24,9 +24,10 @@ Clones this repo into the volume and execs `scripts/runpod_serve.sh`, which runs
 `miner_bot.local_serve`: it reads `config/models.yaml`, picks the highest-priority model that
 fits the GPU, and execs vLLM. Change a model by editing `models.yaml` and restarting the pod.
 
-**Prerequisite: this repo must be on a git remote.** It has no `.git` yet. Until you push it,
-`$REPO_URL` has nothing to clone and the pod will exit on the first boot step — use the no-repo
-body instead.
+`REPO_URL` already points at https://github.com/EvilIggy55/sn64-miner-bot. The repo is public
+so the pod clones it anonymously — no deploy key or PAT on rented hardware. Point it at your own
+fork if you have one; if you make it private, the clone will prompt for credentials and hang,
+and you'll need a read-only deploy key in the pod's environment.
 
 ## `pod-serve-norepo.json` — plain vLLM arguments
 
