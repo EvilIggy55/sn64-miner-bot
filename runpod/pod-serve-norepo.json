@@ -1,0 +1,34 @@
+{
+  "name": "vllm-qwen3-8b",
+  "imageName": "vllm/vllm-openai:v0.10.0",
+  "cloudType": "SECURE",
+  "gpuTypeIds": [
+    "NVIDIA GeForce RTX 4090"
+  ],
+  "gpuCount": 1,
+  "containerDiskInGb": 40,
+  "volumeInGb": 60,
+  "volumeMountPath": "/workspace",
+  "ports": [
+    "8000/http"
+  ],
+  "env": {
+    "VLLM_API_KEY": "REPLACE_ME: openssl rand -hex 32",
+    "HF_HOME": "/workspace/hf",
+    "HF_TOKEN": ""
+  },
+  "dockerStartCmd": [
+    "--model",
+    "Qwen/Qwen3-8B",
+    "--served-model-name",
+    "qwen3-8b",
+    "--port",
+    "8000",
+    "--host",
+    "0.0.0.0",
+    "--gpu-memory-utilization",
+    "0.90",
+    "--max-model-len",
+    "16384"
+  ]
+}

@@ -1,0 +1,122 @@
+# The bot, its ServiceAccount, and the permissions it needs: manage chute Deployments, Services
+# and Pods in sn64, and read nodes and pods cluster-wide for the GPU inventory.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: miner-bot
+  namespace: sn64
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: miner-bot
+  namespace: sn64
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "create", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "delete"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "create", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: miner-bot
+  namespace: sn64
+subjects:
+  - kind: ServiceAccount
+    name: miner-bot
+    namespace: sn64
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: miner-bot
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: miner-bot-inventory
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: miner-bot-inventory
+subjects:
+  - kind: ServiceAccount
+    name: miner-bot
+    namespace: sn64
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: miner-bot-inventory
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: miner-bot
+  namespace: sn64
+  labels:
+    app: miner-bot
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: miner-bot
+  template:
+    metadata:
+      labels:
+        app: miner-bot
+    spec:
+      serviceAccountName: miner-bot
+      nodeSelector:
+        miner-bot/role: control  # deploy_stack.sh imports the image on the control node only
+      containers:
+        - name: bot
+          image: miner-bot:0.1.0
+          imagePullPolicy: Never
+          envFrom:
+            - secretRef:
+                name: miner-bot-secrets
+          env:
+            - name: MINER_BOT_CONFIG_DIR
+              value: /config
+            - name: REDIS_URL
+              value: redis://redis:6379/0
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: miner-bot-config

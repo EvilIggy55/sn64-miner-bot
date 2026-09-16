@@ -1,0 +1,15 @@
+# k3s server config for the control node. scripts/install_k3s.sh copies this file to
+# /etc/rancher/k3s/config.yaml, which k3s reads when it starts. Keys are k3s server flags
+# without the leading "--".
+
+write-kubeconfig-mode: "0600"
+
+disable:
+  - traefik   # nothing here needs ingress; the bot's API is reached with kubectl port-forward
+
+# Add the control node's public IP or DNS name to use kubectl from another machine.
+tls-san: []
+
+node-label:
+  # The bot, Postgres and Redis run here; the bot image is only imported on this node.
+  - "miner-bot/role=control"

@@ -1,0 +1,30 @@
+# Miner bot settings. scripts/install_gepetto.sh loads this file (with models.yaml) into the
+# miner-bot-config ConfigMap; edit, rerun that script, and the bot restarts with the new values.
+# Secrets and per-deployment values come from the environment instead (see .env.example):
+# SN64_HOTKEY, BT_NETWORK, MINER_NAMESPACE, DATABASE_URL, REDIS_URL override the keys below.
+
+netuid: 64
+network: finney          # BT_NETWORK
+hotkey: ""               # SN64_HOTKEY: ss58 address to track on the metagraph (read-only, no keys)
+
+namespace: sn64          # MINER_NAMESPACE: where chutes are created
+reconcile_interval_seconds: 30   # 0 disables the loop; reconcile with `miner-bot reconcile` instead
+
+# Where each GPU node caches downloaded model weights (hostPath).
+hf_cache_path: /var/lib/miner-bot/hf-cache
+# RuntimeClass chute pods run with. k3s creates "nvidia" when it finds the NVIDIA runtime;
+# set to "" if nvidia is your containerd default runtime.
+runtime_class: nvidia
+
+scheduler:
+  reserve_gpus: 0                # GPUs to leave free across the cluster
+  # VRAM per GPU, used when a node has neither the GPU Feature Discovery label
+  # (nvidia.com/gpu.memory) nor the miner-bot/gpu-memory-gb label install_gpu_node.sh sets.
+  default_gpu_memory_gb: 24
+  node_gpu_memory_gb: {}         # per-node override, e.g. {gpu-node-1: 80}
+
+autoheal:
+  not_ready_grace_seconds: 600       # model loading can take minutes
+  unschedulable_grace_seconds: 120   # GPUs freed by a removed chute take a moment to release
+  max_restarts: 3                    # per window; then the chute is scaled to 0 and marked failed
+  restart_window_seconds: 3600

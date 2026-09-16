@@ -1,0 +1,21 @@
+# ClusterIP only: the API can create and delete Deployments, so never expose it.
+# Reach it with: kubectl -n sn64 port-forward svc/miner-bot 8000:8000
+apiVersion: v1
+kind: Service
+metadata:
+  name: miner-bot
+  namespace: sn64
+  labels:
+    app: miner-bot
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: /metrics
+spec:
+  type: ClusterIP
+  selector:
+    app: miner-bot
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http

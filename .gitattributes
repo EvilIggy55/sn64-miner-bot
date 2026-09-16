@@ -1,0 +1,6 @@
+# Everything here runs on Linux (k3s nodes, the vLLM pod). A CRLF in a shell script breaks its
+# shebang, so keep LF in the working copy on Windows too.
+* text=auto eol=lf
+*.sh text eol=lf
+*.png binary
+*.jpg binary

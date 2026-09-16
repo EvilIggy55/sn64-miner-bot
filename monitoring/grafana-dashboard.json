@@ -1,0 +1,168 @@
+{
+  "title": "SN64 miner bot",
+  "uid": "sn64-miner-bot",
+  "description": "GPU allocation, chute health, autoheal activity and SN64 standing, from the miner bot's /metrics.",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "tags": ["sn64", "miner-bot"],
+  "templating": {
+    "list": [
+      { "name": "datasource", "label": "Data source", "type": "datasource", "query": "prometheus" }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "GPUs in cluster",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "sum(miner_bot_gpus_total)" }],
+      "options": { "colorMode": "none", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 2, "type": "stat", "title": "GPUs given to chutes",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "sum(miner_bot_gpus_planned)" }],
+      "options": { "colorMode": "none", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 3, "type": "stat", "title": "Replicas ready / desired",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [
+        { "refId": "A", "expr": "sum(miner_bot_chute_replicas_ready)", "legendFormat": "ready" },
+        { "refId": "B", "expr": "sum(miner_bot_chute_replicas_desired)", "legendFormat": "desired" }
+      ],
+      "options": { "colorMode": "none", "graphMode": "none", "textMode": "value_and_name", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 4, "type": "stat", "title": "Failed chutes",
+      "description": "Chutes autoheal gave up on. Clear with: miner-bot reset <model>",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "sum(miner_bot_chute_failed) or vector(0)" }],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "#0ca30c", "value": null },
+            { "color": "#d03b3b", "value": 1 }
+          ] }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 5, "type": "stat", "title": "Models not fully placed",
+      "description": "Models running fewer replicas than config/models.yaml asks for. `miner-bot plan` says why.",
+      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "miner_bot_models_unplaced" }],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "#0ca30c", "value": null },
+            { "color": "#fab219", "value": 1 }
+          ] }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 6, "type": "stat", "title": "Since last reconcile",
+      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "time() - max(miner_bot_last_reconcile_timestamp_seconds)" }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "#0ca30c", "value": null },
+            { "color": "#d03b3b", "value": 300 }
+          ] }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "GPUs per node: allocatable vs given to chutes",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [
+        { "refId": "A", "expr": "miner_bot_gpus_total", "legendFormat": "{{node}} allocatable" },
+        { "refId": "B", "expr": "miner_bot_gpus_planned", "legendFormat": "{{node}} to chutes" }
+      ],
+      "fieldConfig": { "defaults": { "min": 0, "decimals": 0, "custom": { "lineWidth": 2, "fillOpacity": 0 } } }
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "Ready replicas per chute",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "miner_bot_chute_replicas_ready", "legendFormat": "{{chute}}" }],
+      "fieldConfig": { "defaults": { "min": 0, "decimals": 0, "custom": { "lineWidth": 2, "fillOpacity": 0 } } }
+    },
+    {
+      "id": 9, "type": "timeseries", "title": "Autoheal actions (per hour)",
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "sum by (chute, action) (increase(miner_bot_autoheal_actions_total[1h]))", "legendFormat": "{{chute}} {{action}}" }],
+      "fieldConfig": { "defaults": { "min": 0, "custom": { "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1 } } }
+    },
+    {
+      "id": 10, "type": "timeseries", "title": "Reconcile duration",
+      "gridPos": { "x": 12, "y": 12, "w": 6, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "miner_bot_reconcile_duration_seconds", "legendFormat": "duration" }],
+      "fieldConfig": { "defaults": { "unit": "s", "min": 0, "custom": { "lineWidth": 2, "fillOpacity": 0 } } }
+    },
+    {
+      "id": 11, "type": "timeseries", "title": "Reconcile errors (per 15 min)",
+      "gridPos": { "x": 18, "y": 12, "w": 6, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "increase(miner_bot_reconcile_errors_total[15m])", "legendFormat": "errors" }],
+      "fieldConfig": { "defaults": { "min": 0, "decimals": 0, "custom": { "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1 } } }
+    },
+    {
+      "id": 12, "type": "stat", "title": "Registered on SN64",
+      "gridPos": { "x": 0, "y": 20, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "miner_bot_sn64{field=\"registered\"}" }],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [{ "type": "value", "options": {
+            "0": { "text": "✕ No", "color": "#d03b3b" },
+            "1": { "text": "✓ Yes", "color": "#0ca30c" }
+          } }],
+          "noValue": "unknown (set SN64_HOTKEY)"
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 13, "type": "stat", "title": "Incentive",
+      "gridPos": { "x": 6, "y": 20, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "miner_bot_sn64{field=\"incentive\"}" }],
+      "fieldConfig": { "defaults": { "decimals": 5 } },
+      "options": { "colorMode": "none", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 14, "type": "stat", "title": "Emission (α per tempo)",
+      "gridPos": { "x": 12, "y": 20, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "miner_bot_sn64{field=\"emission\"}" }],
+      "fieldConfig": { "defaults": { "decimals": 4 } },
+      "options": { "colorMode": "none", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 15, "type": "stat", "title": "Stake (α)",
+      "gridPos": { "x": 18, "y": 20, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [{ "refId": "A", "expr": "miner_bot_sn64{field=\"stake\"}" }],
+      "fieldConfig": { "defaults": { "decimals": 2 } },
+      "options": { "colorMode": "none", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    }
+  ]
+}

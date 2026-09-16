@@ -1,0 +1,10 @@
+# Secrets: Postgres password, Hugging Face token, k3s join token. See .env.example.
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/

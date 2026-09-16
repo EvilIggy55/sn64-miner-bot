@@ -1,0 +1,28 @@
+{
+  "name": "sn64-miner-bot-serve",
+  "imageName": "vllm/vllm-openai:v0.10.0",
+  "cloudType": "SECURE",
+  "gpuTypeIds": [
+    "NVIDIA GeForce RTX 4090"
+  ],
+  "gpuCount": 1,
+  "containerDiskInGb": 40,
+  "volumeInGb": 60,
+  "volumeMountPath": "/workspace",
+  "ports": [
+    "8000/http"
+  ],
+  "env": {
+    "REPO_URL": "https://github.com/YOU/sn64-miner-bot.git",
+    "VLLM_API_KEY": "REPLACE_ME: openssl rand -hex 32",
+    "HF_HOME": "/workspace/hf",
+    "HF_TOKEN": ""
+  },
+  "dockerEntrypoint": [
+    "bash",
+    "-lc"
+  ],
+  "dockerStartCmd": [
+    "set -eu; command -v git >/dev/null || { apt-get update -qq && apt-get install -y -qq --no-install-recommends git; }; if [ -d /workspace/sn64-miner-bot/.git ]; then git -C /workspace/sn64-miner-bot pull --ff-only; else git clone --depth 1 \"$REPO_URL\" /workspace/sn64-miner-bot; fi; exec bash /workspace/sn64-miner-bot/scripts/runpod_serve.sh"
+  ]
+}

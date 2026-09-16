@@ -1,0 +1,51 @@
+# Scrape config for a Prometheus running inside the cluster (it needs RBAC to list endpoints
+# and pods). Load it as that Prometheus's prometheus.yml.
+global:
+  scrape_interval: 30s
+
+scrape_configs:
+  # The bot's own metrics (miner_bot_*), found through the miner-bot Service.
+  - job_name: miner-bot
+    kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names: [sn64]
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name]
+        action: keep
+        regex: miner-bot
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+        action: keep
+        regex: "true"
+      - source_labels: [__meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: http
+
+  # vLLM's /metrics on every chute pod: requests, token throughput, KV-cache use.
+  - job_name: chutes
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names: [sn64]
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_managed_by]
+        action: keep
+        regex: miner-bot
+      - source_labels: [__meta_kubernetes_pod_container_port_name]
+        action: keep
+        regex: http
+      - source_labels: [__meta_kubernetes_pod_label_miner_bot_model]
+        target_label: chute
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        target_label: node
+
+  # NVIDIA DCGM exporter, if you run it: per-GPU utilization, memory and temperature.
+  - job_name: dcgm-exporter
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+        action: keep
+        regex: dcgm-exporter
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        target_label: node

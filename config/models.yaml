@@ -1,0 +1,40 @@
+# Models the scheduler may deploy. Each becomes a "chute": a vLLM OpenAI-compatible server
+# Deployment (plus a Service) that the bot owns. When GPUs are short, higher priority wins.
+#
+# Per model:
+#   name               chute name: lowercase letters, digits, '-' (max 40)
+#   model              Hugging Face repo id passed to --model
+#   gpus               GPUs per replica, all on one node (>1 adds --tensor-parallel-size)
+#   min_gpu_memory_gb  VRAM each of those GPUs needs
+#   priority           higher is placed first
+#   replicas           how many copies to run if GPUs allow
+#   args, env, image, port   optional; a model's value replaces the default, not merged
+
+defaults:
+  image: vllm/vllm-openai:v0.10.0   # pin to the version you've tested
+  port: 8000
+  args: ["--gpu-memory-utilization", "0.90"]
+
+models:
+  - name: qwen3-32b
+    model: Qwen/Qwen3-32B
+    gpus: 2
+    min_gpu_memory_gb: 48
+    priority: 20
+    replicas: 1
+    args: ["--gpu-memory-utilization", "0.90", "--max-model-len", "32768"]
+
+  - name: qwen3-8b
+    model: Qwen/Qwen3-8B
+    gpus: 1
+    min_gpu_memory_gb: 24
+    priority: 10
+    replicas: 2
+    args: ["--gpu-memory-utilization", "0.90", "--max-model-len", "16384"]
+
+  - name: qwen2-5-coder-7b
+    model: Qwen/Qwen2.5-Coder-7B-Instruct
+    gpus: 1
+    min_gpu_memory_gb: 24
+    priority: 5
+    replicas: 1
