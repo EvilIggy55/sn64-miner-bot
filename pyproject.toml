@@ -22,6 +22,8 @@ dependencies = [
 # SN64 metagraph stats. Optional because bittensor has no wheels for some platforms;
 # the bot runs without it and reports the chain panel as unavailable.
 chain = ["bittensor>=11.1,<12"]
+# sn51_cli.py, the tmux/typer front end over the `python -m miner_bot.<name>` commands.
+cli = ["typer>=0.12"]
 
 [project.scripts]
 miner-bot = "cli:main"
