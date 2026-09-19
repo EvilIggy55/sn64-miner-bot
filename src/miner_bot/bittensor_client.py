@@ -1,7 +1,9 @@
 """Our hotkey's standing on SN64, read from the Bittensor metagraph.
 
 Uses the bittensor 11 client API (the optional `chain` extra) and only needs the hotkey's public
-ss58 address. Registration itself is done once with scripts/register_hotkey.sh.
+ss58 address. Registration itself is done once with scripts/register_hotkey.sh, or:
+
+    python -m miner_bot.bittensor_client register [--subnet sn51]   # spends TAO; asks first
 """
 import threading
 import time
@@ -55,3 +57,23 @@ class ChainStats:
                 consensus=neuron.consensus,
             )
         return result
+
+
+def main(argv=None) -> int:
+    import argparse
+
+    from . import ops
+
+    parser = argparse.ArgumentParser(prog="bittensor_client")
+    sub = parser.add_subparsers(dest="command", required=True)
+    ops.add_subnet_arg(sub.add_parser("register", help="burn-register WALLET_HOTKEY (spends TAO; asks first)"))
+    args = parser.parse_args(argv)
+    cfg = ops.settings()
+    ops.register_hotkey(cfg, ops.netuid(args.subnet, cfg))
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+
+    sys.exit(main())
