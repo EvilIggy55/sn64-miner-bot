@@ -108,7 +108,7 @@ def main(argv=None) -> int:
     sub.add_parser("chutes", help="running chutes and their health")
     events = sub.add_parser("events", help="recent scheduler and autoheal actions")
     events.add_argument("--limit", type=int, default=30)
-    sub.add_parser("sn64", help="your hotkey on the SN64 metagraph")
+    sub.add_parser("sn64", help="your hotkey on the configured subnet's metagraph")
     sub.add_parser("reconcile", help="reconcile now instead of waiting for the loop")
     reset = sub.add_parser("reset", help="clear a chute's failed mark so it's scheduled again")
     reset.add_argument("model")

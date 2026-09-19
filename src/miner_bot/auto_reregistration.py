@@ -1,11 +1,11 @@
 """Re-register the hotkey if it has been deregistered. Checks first; never loops.
 
-Looks up SN64_HOTKEY on the metagraph. Registered: prints its UID and exits. Deregistered:
+Looks up BT_HOTKEY on the metagraph. Registered: prints its UID and exits. Deregistered:
 offers the same burn registration as `bittensor_client register`, which asks before spending.
 It won't register when it can't read the chain: a blind registration could burn TAO for a
 hotkey that is still registered.
 
-SN64_HOTKEY must be the ss58 address of WALLET_HOTKEY. Nothing here can check that without keys.
+BT_HOTKEY must be the ss58 address of WALLET_HOTKEY. Nothing here can check that without keys.
 
     python -m miner_bot.auto_reregistration [--subnet sn51] [--check]
 """
@@ -23,7 +23,7 @@ def main(argv=None) -> int:
     cfg = ops.settings()
     uid = ops.netuid(args.subnet, cfg)
     if not cfg.hotkey:
-        ops.die("set SN64_HOTKEY (the ss58 address of WALLET_HOTKEY) so registration can be checked")
+        ops.die("set BT_HOTKEY (the ss58 address of WALLET_HOTKEY) so registration can be checked")
 
     state = ops.chain_read(cfg.network, lambda s: {"neuron": ops.metagraph(s, uid).by_hotkey(cfg.hotkey)})
     if not state["available"]:

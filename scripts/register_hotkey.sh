@@ -47,4 +47,4 @@ btcli subnet register \
   --wallet.name "$WALLET_NAME" \
   --wallet.hotkey "$WALLET_HOTKEY"
 
-echo "Put the hotkey's ss58 address in .env as SN64_HOTKEY so the bot can report it."
+echo "Put the hotkey's ss58 address in .env as BT_HOTKEY so the bot can report it."

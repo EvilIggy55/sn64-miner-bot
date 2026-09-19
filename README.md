@@ -35,7 +35,7 @@ Around the loop:
   down it keeps the events in memory.
 - `main.py` serves the HTTP API that `cli.py` talks to, and takes a Redis leader lock so only
   one replica reconciles. Without Redis it runs anyway.
-- `bittensor_client.py` reports your hotkey's SN64 metagraph standing: UID, incentive,
+- `bittensor_client.py` reports your hotkey's metagraph standing on the configured subnet: UID, incentive,
   emission and stake. It needs only the public ss58 address.
 
 ## Layout
@@ -74,7 +74,7 @@ Around the loop:
    Dockerfile; the script builds the image from one inlined in the script and imports it into
    k3s with `k3s ctr images import`, so the bot is pinned to the control node.
 5. **Optional, costs TAO:** `bash scripts/register_hotkey.sh` registers your hotkey on the subnet set by `netuid` in `config/miner.yaml`.
-   Then set `SN64_HOTKEY` in `.env` and rerun `deploy_stack.sh` so the bot reports it.
+   Then set `BT_HOTKEY` in `.env` and rerun `deploy_stack.sh` so the bot reports it.
 
 ## Operating
 

@@ -24,7 +24,7 @@ class Metrics:
         self.reconcile_seconds = Gauge("miner_bot_reconcile_duration_seconds", "Duration of the last reconcile", registry=r)
         self.last_reconcile = Gauge("miner_bot_last_reconcile_timestamp_seconds", "When the last reconcile finished", registry=r)
         self.leader = Gauge("miner_bot_leader", "1 while this replica holds the leader lock", registry=r)
-        self.sn64 = Gauge("miner_bot_sn64", "Our hotkey's SN64 metagraph values (registered is 0/1)", ["field"], registry=r)
+        self.sn64 = Gauge("miner_bot_sn64", "Our hotkey's metagraph values on the configured subnet (registered is 0/1)", ["field"], registry=r)
 
 
 class EventLog:

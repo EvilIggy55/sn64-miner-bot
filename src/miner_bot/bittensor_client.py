@@ -1,4 +1,4 @@
-"""Our hotkey's standing on SN64, read from the Bittensor metagraph.
+"""Our hotkey's standing on the configured subnet (netuid in config/miner.yaml), read from the Bittensor metagraph.
 
 Uses the bittensor 11 client API (the optional `chain` extra) and only needs the hotkey's public
 ss58 address. Registration itself is done once with scripts/register_hotkey.sh, or:
@@ -24,7 +24,7 @@ class ChainStats:
                 return self._cached
             base = {"network": self.network, "netuid": self.netuid, "hotkey": self.hotkey}
             if not self.hotkey:
-                data, ttl = {**base, "available": False, "error": "SN64_HOTKEY is not set"}, self.error_ttl
+                data, ttl = {**base, "available": False, "error": "BT_HOTKEY is not set"}, self.error_ttl
             else:
                 try:
                     data, ttl = {**base, "available": True, "error": None, **self._fetch()}, self.ttl

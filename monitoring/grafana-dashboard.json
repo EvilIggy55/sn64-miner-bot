@@ -1,7 +1,7 @@
 {
   "title": "SN64 miner bot",
   "uid": "sn64-miner-bot",
-  "description": "GPU allocation, chute health, autoheal activity and SN64 standing, from the miner bot's /metrics.",
+  "description": "GPU allocation, chute health, autoheal activity and subnet standing, from the miner bot's /metrics.",
   "schemaVersion": 39,
   "version": 1,
   "editable": true,
@@ -125,7 +125,7 @@
       "fieldConfig": { "defaults": { "min": 0, "decimals": 0, "custom": { "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1 } } }
     },
     {
-      "id": 12, "type": "stat", "title": "Registered on SN64",
+      "id": 12, "type": "stat", "title": "Registered on subnet",
       "gridPos": { "x": 0, "y": 20, "w": 6, "h": 4 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [{ "refId": "A", "expr": "miner_bot_sn64{field=\"registered\"}" }],
@@ -135,7 +135,7 @@
             "0": { "text": "✕ No", "color": "#d03b3b" },
             "1": { "text": "✓ Yes", "color": "#0ca30c" }
           } }],
-          "noValue": "unknown (set SN64_HOTKEY)"
+          "noValue": "unknown (set BT_HOTKEY)"
         }
       },
       "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }

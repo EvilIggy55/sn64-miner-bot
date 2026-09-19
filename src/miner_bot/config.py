@@ -9,7 +9,8 @@ from .models_registry import ModelSpec, load_models
 
 # Environment variable -> miner.yaml key. Secrets (database/redis URLs) only come from here.
 ENV_OVERRIDES = {
-    "SN64_HOTKEY": "hotkey",
+    "SN64_HOTKEY": "hotkey",  # old name, still read; BT_HOTKEY below wins when both are set
+    "BT_HOTKEY": "hotkey",
     "BT_NETWORK": "network",
     "MINER_NAMESPACE": "namespace",
     "DATABASE_URL": "database_url",
