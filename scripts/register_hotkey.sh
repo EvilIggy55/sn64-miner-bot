@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Register your hotkey on SN64 (netuid 64). THIS SPENDS TAO: the subnet's current registration
-# burn, which isn't refundable. Run it once, on the machine that holds your wallet.
-# No axon is announced: SN64 miners don't serve one.
+# Register your hotkey on the subnet set by `netuid:` in config/miner.yaml. THIS SPENDS TAO: the
+# subnet's current registration burn, which isn't refundable. Run it once, on the machine that
+# holds your wallet. It doesn't announce an axon.
 #   bash scripts/register_hotkey.sh      (WALLET_NAME and WALLET_HOTKEY in .env or the environment)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -15,7 +15,12 @@ if [[ -f .env ]]; then
   done < <(grep -Ev '^\s*(#|$)' .env)
 fi
 
-NETUID=64
+# Same netuid the bot and sn51_cli.py use, so the two can't drift apart.
+NETUID="$(sed -nE 's/^netuid:[[:space:]]*([0-9]+)[[:space:]]*(#.*)?$/\1/p' config/miner.yaml)"
+if [[ ! $NETUID =~ ^[0-9]+$ ]]; then
+  echo "Can't read a numeric 'netuid:' from config/miner.yaml; not registering." >&2
+  exit 1
+fi
 NETWORK="${BT_NETWORK:-finney}"
 : "${WALLET_NAME:?Set WALLET_NAME (in .env or the environment)}"
 : "${WALLET_HOTKEY:?Set WALLET_HOTKEY (in .env or the environment)}"

@@ -48,7 +48,7 @@ Around the loop:
 | `scripts/install_k3s.sh` | Control node: k3s server and the NVIDIA device plugin |
 | `scripts/install_gpu_node.sh` | GPU host: NVIDIA Container Toolkit, node labels, and k3s agent (or the local server) |
 | `scripts/install_gepetto.sh` | Loads `config/` into the bot's ConfigMap and restarts it, like chutes-miner's `gepetto-code` workflow |
-| `scripts/register_hotkey.sh` | `btcli subnet register --netuid 64`. Spends TAO; asks for confirmation first |
+| `scripts/register_hotkey.sh` | `btcli subnet register` on the `netuid` in `config/miner.yaml`. Spends TAO; asks for confirmation first |
 | `scripts/deploy_stack.sh` | Builds the bot image, imports it into k3s, and applies `k8s/` |
 | `scripts/runpod_serve.sh` | Single-GPU start command: no k3s, one vLLM process (see below) |
 | `runpod/` | Pod bodies for the single-GPU path, and how to post them |
@@ -73,7 +73,7 @@ Around the loop:
 4. **Deploy:** on the control node, `sudo bash scripts/deploy_stack.sh`. The repo has no
    Dockerfile; the script builds the image from one inlined in the script and imports it into
    k3s with `k3s ctr images import`, so the bot is pinned to the control node.
-5. **Optional, costs TAO:** `bash scripts/register_hotkey.sh` registers your hotkey on SN64.
+5. **Optional, costs TAO:** `bash scripts/register_hotkey.sh` registers your hotkey on the subnet set by `netuid` in `config/miner.yaml`.
    Then set `SN64_HOTKEY` in `.env` and rerun `deploy_stack.sh` so the bot reports it.
 
 ## Operating
