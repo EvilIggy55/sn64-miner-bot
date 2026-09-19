@@ -11,7 +11,7 @@ import typer
 app = typer.Typer(help="SN51 Miner CLI — Autonomous Fleet Control")
 
 SESSION = "miner"
-SUBNET = "sn51"  # passed to every chain command; config/miner.yaml says 64
+SUBNET = "sn51"  # passed to every chain command; matches netuid in config/miner.yaml
 PY = sys.executable  # same interpreter/venv this CLI runs under
 # Serves the best-fitting model from config/models.yaml with vLLM. Run from the repo root.
 SERVE = [PY, "-m", "miner_bot.local_serve"]

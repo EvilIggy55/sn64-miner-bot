@@ -3,7 +3,7 @@
 # Secrets and per-deployment values come from the environment instead (see .env.example):
 # SN64_HOTKEY, BT_NETWORK, MINER_NAMESPACE, DATABASE_URL, REDIS_URL override the keys below.
 
-netuid: 64
+netuid: 51
 network: finney          # BT_NETWORK
 hotkey: ""               # SN64_HOTKEY: ss58 address to track on the metagraph (read-only, no keys)
 
