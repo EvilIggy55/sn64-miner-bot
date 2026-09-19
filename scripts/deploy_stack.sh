@@ -52,7 +52,9 @@ secret_args=(
   --from-literal=BT_NETWORK="${BT_NETWORK:-finney}"
 )
 # Optional values are only stored when set, so an empty one never overrides a default.
-[[ -n "${SN64_HOTKEY:-}" ]] && secret_args+=(--from-literal=SN64_HOTKEY="$SN64_HOTKEY")
+# BT_HOTKEY, or the older SN64_HOTKEY. Stored as BT_HOTKEY either way.
+BT_HOTKEY="${BT_HOTKEY:-${SN64_HOTKEY:-}}"
+[[ -n "$BT_HOTKEY" ]] && secret_args+=(--from-literal=BT_HOTKEY="$BT_HOTKEY")
 [[ -n "${HF_TOKEN:-}" ]] && secret_args+=(--from-literal=HF_TOKEN="$HF_TOKEN")
 $KUBECTL -n "$NAMESPACE" create secret generic miner-bot-secrets "${secret_args[@]}" \
   --dry-run=client -o yaml | $KUBECTL apply -f -

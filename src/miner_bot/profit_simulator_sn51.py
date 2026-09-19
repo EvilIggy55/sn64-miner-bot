@@ -1,7 +1,7 @@
 """Daily profit from live chain data: emission in, GPU rent out, registration burn to recover.
 
 Revenue comes from a real neuron's last-epoch emission:
-- your hotkey (SN64_HOTKEY) if it's registered on the subnet, or
+- your hotkey (BT_HOTKEY) if it's registered on the subnet, or
 - with --percentile P, the miner at that percentile of emission among neurons earning
   anything. Use this for "what would a typical miner here make". Getting there would take a
   miner that validators actually score. This repo isn't one (see README), so its own number is 0.

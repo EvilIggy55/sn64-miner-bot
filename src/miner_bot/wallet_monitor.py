@@ -1,6 +1,6 @@
 """Free TAO in your coldkey and your hotkey's stake on the subnet.
 
-Reads public addresses only: WALLET_COLDKEY_SS58 for the balance, SN64_HOTKEY for the stake.
+Reads public addresses only: WALLET_COLDKEY_SS58 for the balance, BT_HOTKEY for the stake.
 Either may be unset; its section then says so.
 
     python -m miner_bot.wallet_monitor [--subnet sn51]
@@ -36,7 +36,7 @@ def main(argv=None) -> int:
     base = {"network": cfg.network, "netuid": uid, "coldkey": coldkey or None, "hotkey": cfg.hotkey or None}
     if not coldkey and not cfg.hotkey:
         return ops.emit({**base, "available": False,
-                         "error": "set WALLET_COLDKEY_SS58 and/or SN64_HOTKEY (public ss58 addresses)"})
+                         "error": "set WALLET_COLDKEY_SS58 and/or BT_HOTKEY (public ss58 addresses)"})
     return ops.emit({**base, **ops.chain_read(cfg.network, fetch)})
 
 

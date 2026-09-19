@@ -1,7 +1,7 @@
 """Your hotkey's earnings per day on the subnet, from its last epoch's emission.
 
 Emission is paid in the subnet's alpha. `tao_per_day_at_spot` converts at the pool's spot price
-and ignores unstaking slippage. Needs SN64_HOTKEY (public ss58) and the `chain` extra.
+and ignores unstaking slippage. Needs BT_HOTKEY (public ss58) and the `chain` extra.
 
     python -m miner_bot.tao_monitor [--subnet sn51]
 """
@@ -19,7 +19,7 @@ def main(argv=None) -> int:
     uid = ops.netuid(args.subnet, cfg)
     base = {"network": cfg.network, "netuid": uid, "hotkey": cfg.hotkey}
     if not cfg.hotkey:
-        return ops.emit({**base, "available": False, "error": "SN64_HOTKEY is not set"})
+        return ops.emit({**base, "available": False, "error": "BT_HOTKEY is not set"})
 
     def fetch(subtensor):
         mg = ops.metagraph(subtensor, uid)
